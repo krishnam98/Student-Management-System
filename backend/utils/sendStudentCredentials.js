@@ -1,7 +1,7 @@
 import { transporter } from "../config/mail.js";
 
 export const sendStudentCredentials = async (email, tempPassword) => {
-  const mailOptions = {
+  const mailingOptions = {
     from: process.env.MAIL_USERNAME,
     to: email,
     subject: "Your Student Account Credentials",
@@ -14,5 +14,5 @@ export const sendStudentCredentials = async (email, tempPassword) => {
     `,
   };
 
-  await transporter.sendMail(mailOptions);
+  await transporter.sendMail(mailingOptions);
 };
