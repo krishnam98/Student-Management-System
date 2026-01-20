@@ -1,7 +1,7 @@
 import { transporter } from "../config/mail.js";
 
 export const sendStudentCredentials = async (email, tempPassword) => {
-  // Defining the mailing options for main branch
+  // Define the email options
   const mailingOptions = {
     from: process.env.MAIL_USERNAME,
     to: email,
