@@ -1,6 +1,6 @@
-import bcrypt from "bcrypt.js";
-import User from "../models/User";
-import { sendStudentCredentials } from "../mailUtils/sendStudentCredentials";
+import bcrypt from "bcryptjs";
+import User from "../models/User.js";
+import { sendStudentCredentials } from "../utils/sendStudentCredentials.js";
 
 export const addStudent = async (req, res) => {
   try {
@@ -9,18 +9,23 @@ export const addStudent = async (req, res) => {
       return res.status(400).json("missing details");
     }
     const hashed = await bcrypt.hash(password, 12);
-    const student = await User.create({
-      name: name,
-      email: email,
-      password: hashed,
-      role: "STUDENT",
-      department: dept,
-      dob: dob,
-    });
 
-    await sendStudentCredentials(email, password);
+    try {
+      await sendStudentCredentials(email, password);
+      const student = await User.create({
+        name: name,
+        email: email,
+        password: hashed,
+        role: "STUDENT",
+        department: dept,
+        dob: dob,
+      });
 
-    return res.json({ student, message: "Student created" });
+      return res.json({ student, message: "Student created" });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: "Internal Server Error" });
@@ -45,8 +50,8 @@ export const getStudents = async (req, res) => {
 
     res.json({
       students,
-      totalpages: Math.ceil(total / limit),
-      Currentpage: Number(page),
+      totalPages: Math.ceil(total / limit),
+      CurrentPage: Number(page),
     });
   } catch (error) {
     res.status(500).json({ message: "Internal Server Error" });
